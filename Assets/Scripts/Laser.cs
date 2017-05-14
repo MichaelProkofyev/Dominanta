@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Laser : MonoBehaviour {
 
-    public float raycastDistance = 5f;
+    public int numberOfReflections = 3;
 
     LineRenderer laserLine;
 
@@ -17,10 +17,10 @@ public class Laser : MonoBehaviour {
 
       //  LaserTaskBase lineTask = new LineTask(new Vector3(0f, -2f, 0f), 4f, 0);
         LaserTaskBase sinTask = new SinTask(new Vector3(5f, -5f, 5f), 4f, 5);
-        LaserTaskBase cosTask = new CosTask(new Vector3(5f, -5f, 5f), 4f, 0);
+        LaserTaskBase cosTask = new CosTask(new Vector3(5f, -10f, 5f), 4f, 0);
 
        // tasks.Add(lineTask);
-        tasks.Add(sinTask);
+    //    tasks.Add(sinTask);
         tasks.Add(cosTask);
     }
 	
@@ -38,14 +38,24 @@ public class Laser : MonoBehaviour {
         RaycastHit hitInfo;
         Vector3 direction = endPosition - startPosition;
 
-        raycastDistance = Vector3.Distance(endPosition, startPosition);
+        float raycastDistance = Vector3.Distance(endPosition, startPosition);
         bool hitSomething = Physics.Raycast(transform.position, direction, out hitInfo, raycastDistance);
         if(hitSomething) {
-            laserLine.positionCount = 3;
-            laserLine.SetPosition(1, hitInfo.point);
-            //Reflection
-            Vector3 pos = Vector3.Reflect(direction * raycastDistance, hitInfo.normal);
-            laserLine.SetPosition(2, pos);
+
+            int reflectionIdx = 0;
+            Vector3 reflectionEndPosition = Vector3.zero;
+            for (; reflectionIdx < numberOfReflections; reflectionIdx++) {
+                laserLine.positionCount = 2 + reflectionIdx + 1; 
+                laserLine.SetPosition(reflectionIdx + 1, hitInfo.point);
+                //Reflection
+                reflectionEndPosition = Vector3.Reflect(direction * raycastDistance, hitInfo.normal);
+                direction = reflectionEndPosition - hitInfo.point;
+                raycastDistance = Vector3.Distance(reflectionEndPosition, hitInfo.point);
+                hitSomething = Physics.Raycast(hitInfo.point, direction, out hitInfo, raycastDistance);
+                if (!hitSomething) break;
+            }
+            laserLine.SetPosition(laserLine.positionCount - 1, reflectionEndPosition);
+
         }
         else {
             laserLine.positionCount = 2;
