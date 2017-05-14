@@ -2,20 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class Laser : MonoBehaviour {
 
     public int numberOfReflections = 3;
 
     LineRenderer laserLine;
 
-<<<<<<< HEAD
-    public Vector3 startPos;
-    public Vector3 endPos;
-=======
     List<LaserTaskBase> tasks = new List<LaserTaskBase>();
     int currTaskIdx = 0;
->>>>>>> 88597d54bfa8c74870f42d8c85fc1dd32d711986
 
 	// Use this for initialization
 	void Start () {
@@ -35,18 +29,8 @@ public class Laser : MonoBehaviour {
         if (currTaskIdx >= tasks.Count) return;  //If no tasks left - do nothing
 
 
-<<<<<<< HEAD
-//        Vector3 startPosition = transform.position;
-//        Vector3 endPosition = startPosition + Random.insideUnitSphere * 5f;
-
-        Vector3 startPosition = startPos;
-        Vector3 endPosition = endPos;
-
-
-=======
         Vector3 startPosition = transform.position;
         Vector3 endPosition = tasks[currTaskIdx].NextPoint(); // startPosition + Random.insideUnitSphere * 5f;
->>>>>>> 88597d54bfa8c74870f42d8c85fc1dd32d711986
 
         laserLine.SetPosition(0, startPosition);
 
